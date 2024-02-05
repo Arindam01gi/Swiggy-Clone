@@ -47,7 +47,7 @@ const Header = () => {
           >
             {btnName}
           </button>
-          <li className="px-4 ">{data.loggedInUser}</li>
+          {/* <li className="px-4 ">{data.loggedInUser}</li> */}
         </ul>
       </div>
     </div>
