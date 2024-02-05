@@ -1,0 +1,22 @@
+
+.justify-cntr{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dotted-line{
+  border: 1px dashed 
+}
+
+.vertical-writing{
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  font-size: 10px;
+  border-left: 1px solid #e9e9eb;
+  color: #E46D47;
+}
+
+.small-text{
+  font-size: 10px;
+}
