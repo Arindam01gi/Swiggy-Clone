@@ -20,3 +20,24 @@
 .small-text{
   font-size: 10px;
 }
+
+.absolute:hover {
+  transform: scale(0.9); 
+  transition: transform 0.3s ease; 
+}
+.active{
+  height: 34px;
+  padding:8px 8px 4px;
+  /* background-color: rgba(204, 208, 211, 0.944); */
+  border-radius: 100%;
+}
+
+/* .absolute {
+  z-index: 1;
+} */
+
+
+/* .image:hover  {
+  transform: scale(0.9); 
+  transition: transform 0.3s ease;
+} */

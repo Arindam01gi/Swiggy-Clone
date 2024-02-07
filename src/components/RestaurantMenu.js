@@ -100,7 +100,7 @@ const RestaurantMenu = () => {
           </div>
           <div className="text-slate-700 flex items-center gap-2">
             <svg
-              class="RestaurantTimeCost_icon__8UdT4"
+              className="RestaurantTimeCost_icon__8UdT4"
               width="18"
               height="18"
               viewBox="0 0 18 18"

@@ -16,9 +16,9 @@ const RestaurantCard = (props) => {
   } = resData?.info;
 
   return (
-    <div className="w-64 h-[270px]  mx-0 my-2 rounded-xl ">
+    <div className="w-64 h-[270px] mx-0 my-2 rounded-xl image  ">
       <img
-        className="w-[270px] h-[165px] m-1 rounded-xl"
+        className="w-[270px] h-[165px]  m-1 rounded-xl cursor-pointer"
         src={CDN_URL + cloudinaryImageId}
         alt="res-logo"
       />
@@ -31,11 +31,11 @@ const RestaurantCard = (props) => {
         </span>
         {avgRating} •<span className="ml-2">{sla.slaString}</span>
       </h4>
-      <h4 className=" mx-3 my-1 font-light text-sm">
+      <h4 className=" mx-3 my-1  text-sm text-slate-500">
         {cuisines.slice(0, 3).join(", ")}
         {cuisines.length > 3 ? " ..." : ""}
       </h4>
-      <h4 className="mx-3 font-light text-sm">{areaName}</h4>
+      <h4 className="mx-3 text-sm text-slate-500">{areaName}</h4>
     </div>
   );
 };
@@ -55,16 +55,17 @@ export const withDeliveryTime = () => {
       discountInfo && discountInfo.header && discountInfo.subHeader;
 
     return (
-      <div>
+      <>
+      
         {discountInfoNotEmpty && (
-          <label className="absolute  text-white py-32 px-10 rounded-lg font-extrabold text-xl">
-            {resData?.info?.aggregatedDiscountInfoV3?.header}{" "}
+          <label className=" absolute text-white py-32 px-6 rounded-lg font-extrabold text-lg h-[20px]">
+            {resData?.info?.aggregatedDiscountInfoV3?.header}
             {resData?.info?.aggregatedDiscountInfoV3?.subHeader}
           </label>
         )}
 
         <RestaurantCard {...props} />
-      </div>
+        </>
     );
   };
 };
