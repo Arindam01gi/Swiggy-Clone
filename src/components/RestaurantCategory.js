@@ -1,7 +1,7 @@
 import ItemList from "./ItemList";
 
 const RestaurantCategory = ({ data, showItems, setShowIndex }) => {
-  // console.log("data",data);
+
 
   const handleSubmit = () => {
     setShowIndex();
@@ -11,8 +11,8 @@ const RestaurantCategory = ({ data, showItems, setShowIndex }) => {
     <div>
       <div className="w-6/12 mx-auto my-4 bg-gray-50 shadow-lg p-4 ">
         <div className="flex justify-between" onClick={handleSubmit}>
-          <span className="font-bold text-lg text-slate-700">
-            {data.title} ({data.itemCards.length})
+          <span className="font-bold text-base text-slate-700">
+            {data.title} ({  data.itemCards.length})
           </span>
           <span className="cursor-pointer">
             {showItems ? (

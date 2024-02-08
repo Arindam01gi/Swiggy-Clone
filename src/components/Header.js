@@ -6,7 +6,12 @@ import { useSelector } from "react-redux";
 // import {logo} from '../assets/images/logo'
 const Header = () => {
   const [btnName, setBtnName] = useState("Log in");
+  const [activeHeader,setActiveHeader] = useState("")
   const location = useLocation();
+
+
+
+
 
   const data = useContext(UserContext);
 
@@ -19,10 +24,10 @@ const Header = () => {
       </div>
       <div className={`nav-items w-3/6 flex justify-center items-center`} >
         <ul className="flex p-4 m-4">
-          <li className="px-4 font-semibold hover:text-orange-500">
+          <li className={`px-4 font-semibold hover:text-orange-500 ${activeHeader==='home'?"text-orange-500":""}`}>
             <Link to="/">Home</Link>
           </li>
-          <li className="px-4 font-semibold hover:text-orange-500">
+          <li className={`px-4 font-semibold hover:text-orange-500 ${activeHeader==='about'?"text-orange-500":""}`}>
             <Link to="/about">About Me</Link>
           </li>
           {/* <li className="px-4 font-bold">
