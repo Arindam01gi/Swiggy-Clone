@@ -20,7 +20,7 @@ const ImageCarousel = ({ props }) => {
           ))}
         </div>
       )}>
-           {props.map((image)=>(
+           {props?.map((image)=>(
             <img src={`${CDN_URL}${image?.creativeId}`} alt="carousel" className="h-full max-w-[403px] object-cover" key={image?.creativeId}/>
            ))
         }

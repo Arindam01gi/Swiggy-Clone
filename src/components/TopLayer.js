@@ -41,7 +41,7 @@ const TopLayer = (props) => {
                   viewBox="0 0 17 17"
                   fill="none"
                   aria-hidden="true"
-                  strokeColor="rgba(2, 6, 12, 0.92)"
+                  strokecolor="rgba(2, 6, 12, 0.92)"
                   fillcolor="rgba(2, 6, 12, 0.92)"
                 >
                   <path
@@ -62,7 +62,7 @@ const TopLayer = (props) => {
                   viewBox="0 0 17 17"
                   fill="none"
                   aria-hidden="true"
-                  strokeColor="rgba(2, 6, 12, 0.92)"
+                  strokecolor="rgba(2, 6, 12, 0.92)"
                   fillcolor="rgba(2, 6, 12, 0.92)"
                 >
                   <path

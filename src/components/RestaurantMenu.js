@@ -47,9 +47,9 @@ const RestaurantMenu = () => {
     );
 
   return (
-    <div className="text-center  ">
+    <div className="text-center ">
       <div className="flex justify-center align-center ">
-        <div className=" flex justify-between w-1/2 px-2 border-gray-200 border-b-2">
+        <div className=" flex justify-between  px-2 border-gray-200 border-b-2 lg:w-1/2 xs:w-11/12">
           <div className="w-3/4 text-left my-6">
             <h1 className="font-bold  text-xl">{name}</h1>
             <p className="text-slate-500 text-sm mt-2">{cuisines.join(" ,")}</p>
@@ -87,7 +87,7 @@ const RestaurantMenu = () => {
         </div>
       </div>
       <div className="flex justify-center align-center ">
-        <div className="flex mt-3  w-1/2 gap-4">
+        <div className="flex mt-3  w-1/2 gap-4 sm:justify-center lg:justify-start">
           <div className="text-slate-700 flex items-center gap-2">
             <svg
               className="RestaurantTimeCost_icon__8UdT4"
@@ -137,7 +137,7 @@ const RestaurantMenu = () => {
       </div>
 
       <div className="flex justify-center align-center ">
-        <div className="flex mt-3 w-1/2 gap-3 cursor-pointer border-gray-200 border-b-2 pb-8">
+        <div className="flex flex-wrap mt-3 w-1/2 gap-3 cursor-pointer border-gray-200 border-b-2 pb-8 sm:justify-center lg:justify-start">
           {offerDetails && offerDetails.length > 0 ? (
             <>
               {offerDetails.slice(0, 3).map((offer, index) => {
@@ -186,12 +186,13 @@ const RestaurantMenu = () => {
           )}
         </div>
       </div>
-    
-        <div className="flex justify-center align-center">
+      {carousel?<div className="flex justify-center align-center">
           <div className="flex w-1/2 border-gray-200 border-b-2 my-4 pb-4">
             <ImageCarousel props={carousel} />
           </div>
-        </div>
+        </div>:""}
+    
+        
       
       {/* Categories Accordian  */}
       {categories.map((category, index) => (
