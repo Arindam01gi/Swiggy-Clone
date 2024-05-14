@@ -23,7 +23,11 @@ const RestaurantMenu = () => {
     feeDetails,
     totalRatingsString,
     avgRating,
-  } = resInfo?.cards[0]?.card?.card?.info;
+  } 
+  // = resInfo?.cards[0]?.card?.card?.info;
+  = resInfo?.cards[2]?.card?.card?.info;
+
+  console.log("feeDetails",feeDetails)
 
   const offerDetails =
     resInfo?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.offers;
@@ -31,14 +35,15 @@ const RestaurantMenu = () => {
   // console.log("abc", offerDetails);
 
   const { itemCards } =
-    resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
+    // resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
+    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
 
   const carousel  =
-    resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card
+    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card
       ?.carousel;
 
   const categories =
-    resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
+    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
       (c) =>
         c.card?.card?.["@type"] ===
         "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
