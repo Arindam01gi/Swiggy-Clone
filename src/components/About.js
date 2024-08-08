@@ -17,7 +17,7 @@ class About extends React.Component{
     }
     render(){
         return(
-            <div>
+            <div className="relative top-20">
                 <h1>About Class Component</h1>
                 <div>
                     loggedInUser:<span><UserContext.Consumer>

@@ -27,8 +27,8 @@ const Cart = () => {
 
   return (
     <>
-      <div className="bg-slate-300 flex justify-center h-screen ">
-        <div className="w-1/3 bg-white flex justify-center m-8 ">
+      <div className="bg-slate-300 flex justify-center h-screen relative top-16 ">
+        <div className=" w-full md:w-1/3 bg-white flex justify-center my-3">
           <div className=" w-full text-center mt-2 mx-2">
             <p className="font-bold text-xl text-slate-500 p-2 ">Cart</p>
 

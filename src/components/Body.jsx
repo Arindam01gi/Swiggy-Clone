@@ -99,7 +99,7 @@ const Body = () => {
   return listOfRestaurants?.length === 0 ? (
     <Shimmer />
   ) : (
-    <div className=" overflow-x-hidden relative">
+    <div className=" overflow-x-hidden relative top-20">
       {/* <div className="flex justify-between p-4 m-4">
         <div className="search">
           <input
@@ -218,7 +218,7 @@ const Body = () => {
       <div className="flex justify-center mt-4">
         <div className="w-3/4 xl:w-4/5 tablet:w-11/12">
           <p className=" font-bold text-2xl px-4">{deliveryListHeader}</p>
-          <div className="mt-2 flex ml-3 gap-3 ">
+          <div className="mt-2 flex ml-3 gap-1  cursor-pointer">
             {/* <div
               className={`border border-slate-300 md:px-4 md:py-2 px-2 rounded-md font-semibold text-xs md:text-sm text-slate-700 ${
                 activeButton === "all" ? "bg-slate-300" : ""

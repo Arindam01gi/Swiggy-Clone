@@ -74,7 +74,7 @@ const Header = () => {
       </div>
     </div>
     {
-          visible && <div className={` visible md:invisible fixed bg-white top-20 right-0 w-1/2 h-screen overflow-y-hidden z-20`} >
+          visible && <div className={` visible md:invisible fixed bg-white top-20 right-0 w-1/2 h-screen overflow-y-hidden z-20 shadow-lg`} >
             <ul className="   ">
               <li className={`p-3 font-semibold hover:bg-orange-500 hover:text-white text-center ${activeHeader === 'home' ? "text-orange-500" : ""}`}>
                 <Link to="/">Home</Link>

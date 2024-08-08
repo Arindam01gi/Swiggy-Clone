@@ -52,7 +52,7 @@ const RestaurantMenu = () => {
     );
 
   return (
-    <div className="text-center ">
+    <div className="text-center top-20 relative">
       <div className="flex justify-center align-center ">
         <div className=" flex justify-between  px-2 border-gray-200 border-b-2 lg:w-1/2 xs:w-11/12">
           <div className="w-3/4 text-left my-6">
