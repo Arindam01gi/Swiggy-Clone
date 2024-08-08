@@ -16,7 +16,7 @@ const RestaurantCard = (props) => {
   } = resData?.info;
 
   return (
-    <div className="w-64 h-[270px] mx-0 my-2 rounded-xl image  ">
+    <div className="md:w-64 h-[270px] mx-0 my-2 rounded-xl image  ">
       <img
         className="w-[270px] h-[165px]  m-1 rounded-xl cursor-pointer"
         src={CDN_URL + cloudinaryImageId}

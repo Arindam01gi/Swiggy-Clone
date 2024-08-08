@@ -99,7 +99,7 @@ const Body = () => {
   return listOfRestaurants?.length === 0 ? (
     <Shimmer />
   ) : (
-    <div className=" overflow-x-hidden">
+    <div className=" overflow-x-hidden relative">
       {/* <div className="flex justify-between p-4 m-4">
         <div className="search">
           <input
@@ -218,46 +218,54 @@ const Body = () => {
       <div className="flex justify-center mt-4">
         <div className="w-3/4 xl:w-4/5 tablet:w-11/12">
           <p className=" font-bold text-2xl px-4">{deliveryListHeader}</p>
-          <div className="mt-2 flex ml-3 ">
-            <Button
-              className={`border border-slate-300 px-4 py-2 mx-2 rounded-md font-semibold text-sm text-slate-700 ${
+          <div className="mt-2 flex ml-3 gap-3 ">
+            {/* <div
+              className={`border border-slate-300 md:px-4 md:py-2 px-2 rounded-md font-semibold text-xs md:text-sm text-slate-700 ${
                 activeButton === "all" ? "bg-slate-300" : ""
               }`}
               onClick={handleAll}
             >
               All
-            </Button>
-            <Button
-              className={`border border-slate-300 px-4 py-2 mx-2 rounded-md font-semibold text-sm text-slate-700 ${
+            </div> */}
+            <div
+              className={`border border-slate-300 text-xs px-3 py-2 flex justify-center rounded-md font-semibold items-center text-slate-700 ${
+                activeButton === "all" ? "bg-slate-300" : ""
+              }`}
+              onClick={handleAll}
+            >
+              All
+            </div>
+            <div
+              className={`border border-slate-300 px-3 py-2 mx-2  rounded-md whitespace-nowrap font-semibold text-xs md:text-sm text-slate-700 ${
                 activeButton === "rating" ? "bg-slate-300" : ""
               }`}
               onClick={handleRating}
             >
               Rating 4.3+
-            </Button>
-            <Button
-              className={`border border-slate-300 px-4 py-2 mx-2 rounded-md font-semibold text-sm text-slate-700 ${
+            </div>
+            <div
+              className={`border border-slate-300 px-3 py-2  mx-2 rounded-md whitespace-nowrap text-xs md:text-sm text-slate-700 font-semibold ${
                 activeButton === "veg" ? "bg-slate-300" : ""
               }`}
               onClick={handleFastVeg}
             >
               Veg
-            </Button>
-            <Button
-              className={`border border-slate-300 px-4 py-2 mx-2 rounded-md font-semibold text-sm text-slate-700 ${
+            </div>
+            <div
+              className={`border border-slate-300 px-2  mx-2 rounded-md whitespace-nowrap flex justify-center items-center text-xs md:text-sm text-slate-700 font-semibold ${
                 activeButton === "delivery" ? "bg-slate-300" : ""
               }`}
               onClick={handleFastDelivery}
             >
               Fast Delivery
-            </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="flex justify-center align-center ">
         <div className="w-3/4 xl:w-4/5 tablet:w-11/12 mt-4 px-4">
-          <div className=" pb-4  flex  xl:gap-x-3 md:gap-x-4  md:flex-row md:flex-wrap  flex-col overflow-hidden">
+          <div className=" pb-4  flex  xl:gap-x-3 md:gap-x-4  md:flex-row md:flex-wrap  flex-col overflow-hidden justify-center items-center">
             {filteredRestaurant?.map((restaurant) => (
               <Link
                 key={restaurant.info.id}
