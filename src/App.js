@@ -14,11 +14,13 @@ import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import Cart from "./components/Cart";
 import './assets/css/frontend.css';
+import Login from "./components/Login";
 
 const Grocery = lazy(() => import("./components/Grocery"));
 
 const AppLayout = () => {
   const [userName, setUserName] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const data = {
@@ -27,11 +29,20 @@ const AppLayout = () => {
     setUserName(data.name);
   }, []);
 
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
   return (
     <Provider store={appStore}>
       <UserContext.Provider value={{ loggedInUser: userName }}>
         <div className="app">
           <Header />
+          {/* {isAuthenticated ? (
+            <Outlet />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )} */}
           <Outlet />
         </div>
       </UserContext.Provider>

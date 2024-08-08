@@ -91,9 +91,9 @@ const RestaurantMenu = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center align-center ">
-        <div className="flex mt-3  w-1/2 gap-4 sm:justify-center lg:justify-start">
-          <div className="text-slate-700 flex items-center gap-2">
+      <div className="flex justify-center items-center ">
+        <div className="flex mt-3 w-11/12 md:w-1/2 gap-10 md:gap-4 justify-center  lg:justify-start">
+          <div className="text-slate-700 flex items-center gap-2 ">
             <svg
               className="RestaurantTimeCost_icon__8UdT4"
               width="18"
@@ -141,8 +141,8 @@ const RestaurantMenu = () => {
         </div>
       </div>
 
-      <div className="flex justify-center align-center ">
-        <div className="flex flex-wrap mt-3 w-1/2 gap-3 cursor-pointer border-gray-200 border-b-2 pb-8 sm:justify-center lg:justify-start">
+      <div className="flex justify-center items-center ">
+        <div className="flex flex-wrap mt-3 w-11/12 md:w-1/2 gap-3 cursor-pointer border-gray-200 border-b-2 pb-8 sm:justify-center lg:justify-start">
           {offerDetails && offerDetails.length > 0 ? (
             <>
               {offerDetails.slice(0, 3).map((offer, index) => {
