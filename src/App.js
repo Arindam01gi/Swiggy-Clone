@@ -14,7 +14,7 @@ import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import Cart from "./components/Cart";
 import './assets/css/frontend.css';
-import Login from "./components/Login";
+// import Login from "./components/Login";
 
 const Grocery = lazy(() => import("./components/Grocery"));
 
