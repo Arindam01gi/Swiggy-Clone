@@ -53,8 +53,8 @@ const ItemList = ({ items }) => {
             </div>
 
 
-            <div className="relative">
-              <div className="w-32 h-32 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-all border border-gray-50">
+            <div className="flex flex-col items-center flex-shrink-0 w-32 relative">
+              <div className="w-32 h-32 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-all border border-gray-50 bg-gray-50">
                 {imageId ? (
                   <img
                     src={URL + imageId}
@@ -62,40 +62,43 @@ const ItemList = ({ items }) => {
                     alt={name}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-50 flex items-center justify-center">
-                    <i className="fa-solid fa-utensils text-gray-200 text-2xl"></i>
+                  <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+                    <i className="fa-solid fa-utensils text-gray-200 text-2xl mb-2"></i>
+                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-tighter leading-tight">No image available</span>
                   </div>
                 )}
+
               </div>
 
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-9">
+              <div className="w-24 h-9 -mt-5 z-10">
                 {itemInCart ? (
                   <div className="bg-white flex items-center justify-between border border-gray-200 rounded-lg shadow-xl px-2 h-full w-full overflow-hidden">
                     <button
-                      onClick={() => handleDecrease(item)}
-                      className="text-[#60b246] font-black text-xl hover:scale-110 transition-transform w-8 h-full flex items-center justify-center"
+                      onClick={(e) => { e.preventDefault(); handleDecrease(item); }}
+                      className="text-[#60b246] font-black text-xl hover:bg-gray-50 transition-colors w-8 h-full flex items-center justify-center"
                     >
                       −
                     </button>
                     <span className="text-[#60b246] font-black text-sm tabular-nums">{itemInCart.quantity}</span>
                     <button
-                      onClick={() => handleIncrease(item)}
-                      className="text-[#60b246] font-black text-xl hover:scale-110 transition-transform w-8 h-full flex items-center justify-center"
+                      onClick={(e) => { e.preventDefault(); handleIncrease(item); }}
+                      className="text-[#60b246] font-black text-xl hover:bg-gray-50 transition-colors w-8 h-full flex items-center justify-center"
                     >
                       +
                     </button>
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleAddItem(item)}
+                    onClick={(e) => { e.preventDefault(); handleAddItem(item); }}
                     className="bg-white text-[#60b246] font-black text-[14px] rounded-lg shadow-xl border border-gray-200 w-full h-full hover:bg-gray-50 transition-all uppercase tracking-tight flex items-center justify-center"
                   >
                     Add
                   </button>
                 )}
               </div>
-
             </div>
+
+
           </div>
         );
       })}
