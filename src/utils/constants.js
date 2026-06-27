@@ -1,11 +1,9 @@
 export const CDN_URL =
   "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/";
 
-// export const LOGO_URL =
-//   "https://1000logos.net/wp-content/uploads/2021/05/Swiggy-logo.png";
+export const GET_RESTAURANTS_API = (lat, lng) =>
+  `https://foodfire.onrender.com/api/restaurants?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
 
-export const SWIGGY_API_URL =
-  "https://foodfire.onrender.com/api/restaurants?lat=22.6150956&lng=88.4185765&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING";
+export const GET_MENU_API = (lat, lng, resId) =>
+  `https://foodfire.onrender.com/api/menu?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${resId}`;
 
-export const RESTAURANT_ITEM_API =
-  "https://foodfire.onrender.com/api/menu?page-type=REGULAR_MENU&complete-menu=true&lat=22.6232102&lng=88.4106973&restaurantId=";

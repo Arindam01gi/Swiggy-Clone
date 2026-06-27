@@ -5,22 +5,22 @@ import Body from "./components/Body";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import About from "./components/About";
 import Contact from "./components/Contact";
+import Offers from "./components/Offers";
 import Error from "./components/Error";
 import { Outlet } from "react-router-dom";
 import RestaurantMenu from "./components/RestaurantMenu";
 import UserContext from "./utils/UserContext";
-// import Grocery from "./components/Grocery";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import Cart from "./components/Cart";
 import './assets/css/frontend.css';
-// import Login from "./components/Login";
+
+import Footer from "./components/Footer";
 
 const Grocery = lazy(() => import("./components/Grocery"));
 
 const AppLayout = () => {
   const [userName, setUserName] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const data = {
@@ -29,26 +29,21 @@ const AppLayout = () => {
     setUserName(data.name);
   }, []);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
   return (
     <Provider store={appStore}>
       <UserContext.Provider value={{ loggedInUser: userName }}>
-        <div className="app">
+        <div className="flex flex-col min-h-screen">
           <Header />
-          {/* {isAuthenticated ? (
+          <div className="flex-grow">
             <Outlet />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )} */}
-          <Outlet />
+          </div>
+          <Footer />
         </div>
       </UserContext.Provider>
     </Provider>
   );
 };
+
 
 const appRouter = createBrowserRouter([
   {
@@ -56,8 +51,10 @@ const appRouter = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: "/", element: <Body /> },
-      { path: "/about", element: <About /> },
+      // { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
+
+      { path: "/offers", element: <Offers /> },
       { path: "/restaurant/:resId", element: <RestaurantMenu /> },
       {
         path: "/grocery",
@@ -68,12 +65,13 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        path:"/cart",element:<Cart/>
+        path: "/cart", element: <Cart />
       }
     ],
     errorElement: <Error />,
   },
 ]);
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

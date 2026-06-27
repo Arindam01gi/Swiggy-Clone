@@ -1,11 +1,12 @@
 import RestaurantCard, { withDeliveryTime } from "./RestaurantCard";
 import { useState, useEffect } from "react";
-import { SWIGGY_API_URL } from "../utils/constants";
+import { GET_RESTAURANTS_API } from "../utils/constants";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import TopLayer from "./TopLayer";
-import { Button } from "@material-tailwind/react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateLocation } from "../utils/locationSlice";
 
 const Body = () => {
   const [listOfRestaurants, setListOfRestraunt] = useState([]);
@@ -16,7 +17,10 @@ const Body = () => {
   const [deliveryListHeader, setDeliveryListHeader] = useState("");
   const [searchText, setSearchText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [activeButton, setActiveButton] = useState(null);
+  const [activeButton, setActiveButton] = useState("all");
+
+  const location = useSelector((state) => state.location);
+  const dispatch = useDispatch();
 
   const RestaurantCardWithOffer = withDeliveryTime(<RestaurantCard />);
 
@@ -27,29 +31,69 @@ const Body = () => {
   const currentRestaurant = restaurantChain.slice(startIndex, endIndex);
 
   useEffect(() => {
-    fetchData();
+    // Auto detect location on first load
+    if (location.lat === 22.6150956 && location.lng === 88.4185765) {
+      handleLocationDetection();
+    }
   }, []);
 
+  useEffect(() => {
+    fetchData(location.lat, location.lng);
+  }, [location.lat, location.lng]);
+
+
   const onlineStatus = useOnlineStatus();
-  // console.log("body rendered");
-  const fetchData = async () => {
-    const data = await fetch(SWIGGY_API_URL);
-    const json = await data.json();
 
-    // console.log(json.data.cards);
+  const fetchData = async (lat, lng) => {
+    try {
+      const data = await fetch(GET_RESTAURANTS_API(lat, lng));
+      const json = await data.json();
 
-    setListOfRestraunt(
-      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
-    );
-    setFilteredRestaurant(
-      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
-    );
-    setSuggestionData(json?.data);
-    setRestaurantChain(
-      json?.data?.cards[1].card?.card?.gridElements?.infoWithStyle?.restaurants
-    );
-    setRestaurantChainHeader(json?.data?.cards[1].card?.card?.header?.title);
-    setDeliveryListHeader(json?.data?.cards[2]?.card?.card?.title);
+      const mainCards = json?.data?.cards;
+
+      // Try to find the address from the API response
+      const cityCard = mainCards.find(c => c?.card?.card?.localCityName);
+      if (cityCard) {
+        dispatch(updateLocation({ lat, lng, address: cityCard.card.card.localCityName }));
+      } else {
+        // Fallback: look for a header that might contain the city
+        const chainHeader = mainCards.find(c => c?.card?.card?.header?.title)?.card?.card?.header?.title;
+        if (chainHeader && chainHeader.includes("Top restaurant chains in ")) {
+          const city = chainHeader.replace("Top restaurant chains in ", "");
+          dispatch(updateLocation({ lat, lng, address: city }));
+        }
+      }
+
+      // Find the correct cards (Swiggy API structure changes based on location)
+      const resGrid = mainCards.find(c => c?.card?.card?.gridElements?.infoWithStyle?.restaurants)?.card?.card?.gridElements?.infoWithStyle?.restaurants;
+      const chainGrid = mainCards.find(c => c?.card?.card?.id === "top_brands_for_you")?.card?.card?.gridElements?.infoWithStyle?.restaurants || resGrid;
+
+      setListOfRestraunt(resGrid || []);
+      setFilteredRestaurant(resGrid || []);
+      setSuggestionData(json?.data);
+      setRestaurantChain(chainGrid || []);
+      setRestaurantChainHeader(mainCards.find(c => c?.card?.card?.header?.title)?.card?.card?.header?.title || "Top restaurant chains");
+      setDeliveryListHeader(mainCards.find(c => c?.card?.card?.title)?.card?.card?.title || "Restaurants with online food delivery");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleLocationDetection = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          dispatch(updateLocation({ lat: latitude, lng: longitude }));
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Could not get your location. Please enable location permissions.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
   };
 
   const handlePrevClick = () => {
@@ -83,202 +127,153 @@ const Body = () => {
   };
 
   const handleAll = () => {
-    const filterData = listOfRestaurants;
-    setFilteredRestaurant(filterData);
+    setFilteredRestaurant(listOfRestaurants);
     setActiveButton("all");
   };
 
   if (onlineStatus === false) {
     return (
-      <h1>
-        Looks like you are offline!! Please check your internet connectivity.
-      </h1>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold text-red-500">
+          Looks like you are offline!!
+        </h1>
+        <p>Please check your internet connectivity.</p>
+      </div>
     );
   }
 
   return listOfRestaurants?.length === 0 ? (
     <Shimmer />
   ) : (
-    <div className=" overflow-x-hidden relative top-20">
-      {/* <div className="flex justify-between p-4 m-4">
-        <div className="search">
-          <input
-            type="text"
-            className="border border-solid border-gray-500 h-10 "
-            value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-          />
-          <button
-          className="border text-white rounded-lg h-10 px-4 py-1"
-           style={{backgroundColor:"#FF8702"}}
-            onClick={() => {
-              const filteredRestaurant = listOfRestaurants.filter((res) =>
-                res.info.name.toLowerCase().includes(searchText.toLowerCase())
-              );
-              console.log(filteredRestaurant);
-              setFilteredRestaurant(filteredRestaurant);
-            }}
-          >
-            Search
-          </button>
-        </div>
-        <button
-          className="bg-gray-200 px-4 py-2 mx-2 rounded-md"
-          onClick={() => {
-            const filteredList = listOfRestaurants.filter(
-              (res) => res.info.avgRating > 4.4
-            );
-            setFilteredRestaurant(filteredList);
-          }}
-        >
-          Top Rated Restaurants
-        </button>
-      </div> */}
-      <div className="flex justify-center align-center ">
-        <TopLayer props={suggestionData} />
-      </div>
-      <div className="flex justify-center align-center ">
-        <div className="w-3/4 xl:w-4/5 tablet:w-11/12">
-          <p className="font-bold text-2xl flex justify-between mt-4 px-4">
-            <span>{restaurantChainHeader}</span>
-            <span className="flex gap-2 ">
-              <span
-                className={` cursor-pointer active ${
-                  currentIndex === 0 ? "bg-gray-200" : "bg-slate-300"
-                }`}
+    <main className="overflow-x-hidden pt-24 pb-20 bg-white">
+      <div className="container mx-auto px-4 max-w-[1200px]">
+
+        {/* TopLayer Section */}
+        <section className="mb-14">
+          <TopLayer props={suggestionData} />
+        </section>
+
+        {/* Restaurant Chains Section */}
+        <section className="mb-16">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="font-extrabold text-[24px] text-[#282c3f] tracking-tight">{restaurantChainHeader}</h2>
+              <p className="text-[14px] text-[#686b78] mt-1 font-medium italic">Handpicked favorites in your neighborhood</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${currentIndex === 0 ? "bg-gray-100 text-gray-300" : "bg-[#e2e2e7] text-[#282c3f] hover:bg-[#d4d4d9]"
+                  }`}
                 onClick={handlePrevClick}
+                disabled={currentIndex === 0}
               >
-                <svg
-                  width="17"
-                  height="17"
-                  viewBox="0 0 17 17"
-                  fill="none"
-                  aria-hidden="true"
-                  strokecolor="rgba(2, 6, 12, 0.92)"
-                  fillcolor="rgba(2, 6, 12, 0.92)"
-                >
-                  <path
-                    d="M7.46869 3.43394C7.79171 3.13249 8.29794 3.14998 8.59939 3.473C8.90083 3.79602 8.88334 4.30225 8.56033 4.60369L5.0839 7.84795C4.94511 7.97748 4.82252 8.0921 4.71414 8.19502L15.0937 8.19502C15.5355 8.19502 15.8937 8.5532 15.8937 8.99502C15.8937 9.43685 15.5355 9.79502 15.0937 9.79502L4.6665 9.79502C4.78625 9.90939 4.92436 10.0386 5.08389 10.1875L8.51791 13.3922C8.84092 13.6937 8.8584 14.1999 8.55695 14.5229C8.2555 14.8459 7.74927 14.8634 7.42626 14.5619L3.95463 11.3221C3.54648 10.9413 3.18179 10.601 2.92647 10.2871C2.64873 9.94573 2.41671 9.53755 2.41672 9.01769C2.41672 8.49783 2.64874 8.08965 2.92648 7.74824C3.18181 7.43439 3.54649 7.09412 3.95465 6.7133L7.46869 3.43394Z"
-                    fill="rgba(2, 6, 12, 0.92)"
-                    fillOpacity="0.92"
-                  ></path>
-                </svg>
-                {/* <i
-                  className={`fas fa-arrow-left fa-xs ${
-                    currentIndex === 0 ? "text-gray-200" : "text-slate-600"
-                  } `}
-                ></i> */}
-              </span>
-              <span className={` cursor-pointer active ${
-                    currentIndex === maxIndex
-                      ? "bg-gray-200"
-                      : "bg-slate-300"
-                  } `} onClick={handleNextClick}>
-                <svg
-                  width="17"
-                  height="17"
-                  viewBox="0 0 17 17"
-                  fill="none"
-                  aria-hidden="true"
-                  strokecolor="rgba(2, 6, 12, 0.92)"
-                  fillcolor="rgba(2, 6, 12, 0.92)"
-                >
-                  <path
-                    d="M10.5164 3.43418C10.1934 3.13273 9.68714 3.15022 9.3857 3.47324C9.08425 3.79626 9.10174 4.30249 9.42476 4.60394L12.9012 7.84819C13.04 7.97772 13.1626 8.09234 13.2709 8.19527L2.89142 8.19527C2.44959 8.19527 2.09142 8.55344 2.09142 8.99527C2.09142 9.4371 2.44959 9.79527 2.89142 9.79527L13.3186 9.79527C13.1988 9.90964 13.0607 10.0388 12.9012 10.1877L9.46718 13.3924C9.14416 13.6939 9.12668 14.2001 9.42813 14.5231C9.72958 14.8462 10.2358 14.8636 10.5588 14.5622L14.0304 11.3224C14.4386 10.9415 14.8033 10.6012 15.0586 10.2874C15.3364 9.94598 15.5684 9.5378 15.5684 9.01793C15.5684 8.49807 15.3363 8.08989 15.0586 7.74849C14.8033 7.43463 14.4386 7.09437 14.0304 6.71354L10.5164 3.43418Z"
-                    fill="rgba(2, 6, 12, 0.92)"
-                    fillOpacity="0.92"
-                  ></path>
-                </svg>
-                {/* <i
-                  className={`fas fa-arrow-right fa-xs  ${
-                    currentIndex === maxIndex
-                      ? "text-gray-200"
-                      : "text-slate-600"
-                  } `}
-                ></i> */}
-              </span>
-            </span>
-          </p>
-          <div className="mt-2 pb-4 px-4 flex  xl:gap-x-3 md:gap-x-3  md:flex-row md:flex-wrap  flex-col ">
+                <i className="fa-solid fa-arrow-left text-sm"></i>
+              </button>
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${currentIndex === maxIndex ? "bg-gray-100 text-gray-300" : "bg-[#e2e2e7] text-[#282c3f] hover:bg-[#d4d4d9]"
+                  }`}
+                onClick={handleNextClick}
+                disabled={currentIndex === maxIndex}
+              >
+                <i className="fa-solid fa-arrow-right text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {currentRestaurant?.map((restaurant) => (
               <Link
                 key={restaurant.info.id}
                 to={"restaurant/" + restaurant.info.id}
+                className="transition-all duration-500 hover:scale-[0.96]"
               >
                 <RestaurantCardWithOffer resData={restaurant} />
               </Link>
             ))}
           </div>
-          <hr className="w-full" />
-        </div>
-      </div>
+        </section>
 
-      <div className="flex justify-center mt-4">
-        <div className="w-3/4 xl:w-4/5 tablet:w-11/12">
-          <p className=" font-bold text-2xl px-4">{deliveryListHeader}</p>
-          <div className="mt-2 flex ml-3 gap-1  cursor-pointer">
-            {/* <div
-              className={`border border-slate-300 md:px-4 md:py-2 px-2 rounded-md font-semibold text-xs md:text-sm text-slate-700 ${
-                activeButton === "all" ? "bg-slate-300" : ""
-              }`}
-              onClick={handleAll}
-            >
-              All
-            </div> */}
-            <div
-              className={`border border-slate-300 text-xs px-3 py-2 flex justify-center rounded-md font-semibold items-center text-slate-700 ${
-                activeButton === "all" ? "bg-slate-300" : ""
-              }`}
-              onClick={handleAll}
-            >
-              All
+        <hr className="my-12 border-gray-100" />
+
+        {/* Filters & Regular List Section */}
+        <section>
+          <div className="mb-10">
+            <h2 className="font-extrabold text-[24px] text-[#282c3f] tracking-tight mb-6">{deliveryListHeader}</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+              <div className="flex flex-wrap gap-3 overflow-x-auto no-scrollbar pb-2">
+                <button
+                  className={`px-5 py-2 rounded-full border text-[14px] font-bold transition-all shadow-sm flex-shrink-0 ${activeButton === "all" ? "bg-[#282c3f] text-white border-[#282c3f]" : "bg-white text-[#282c3f] border-[#e2e2e7] hover:bg-gray-50"
+                    }`}
+                  onClick={handleAll}
+                >
+                  All
+                </button>
+                <button
+                  className={`px-5 py-2 rounded-full border text-[14px] font-bold transition-all shadow-sm flex-shrink-0 ${activeButton === "rating" ? "bg-[#282c3f] text-white border-[#282c3f]" : "bg-white text-[#282c3f] border-[#e2e2e7] hover:bg-gray-50"
+                    }`}
+                  onClick={handleRating}
+                >
+                  Ratings 4.3+
+                </button>
+                <button
+                  className={`px-5 py-2 rounded-full border text-[14px] font-bold transition-all shadow-sm flex-shrink-0 ${activeButton === "veg" ? "bg-[#282c3f] text-white border-[#282c3f]" : "bg-white text-[#282c3f] border-[#e2e2e7] hover:bg-gray-50"
+                    }`}
+                  onClick={handleFastVeg}
+                >
+                  Pure Veg
+                </button>
+                <button
+                  className={`px-5 py-2 rounded-full border text-[14px] font-bold transition-all shadow-sm flex-shrink-0 ${activeButton === "delivery" ? "bg-[#282c3f] text-white border-[#282c3f]" : "bg-white text-[#282c3f] border-[#e2e2e7] hover:bg-gray-50"
+                    }`}
+                  onClick={handleFastDelivery}
+                >
+                  Fast Delivery
+                </button>
+              </div>
+
+              {/* Body Search Bar */}
+              <div className="relative group max-w-md w-full">
+                <input
+                  type="text"
+                  placeholder="Search for restaurants..."
+                  className="w-full px-12 py-3 bg-[#e2e2e7] bg-opacity-40 rounded-2xl border border-transparent focus:bg-white focus:border-[#fc8019] focus:ring-4 focus:ring-[#fc8019] focus:ring-opacity-10 transition-all outline-none font-medium text-[15px] text-[#282c3f]"
+                  value={searchText}
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    setSearchText(text);
+                    const filtered = listOfRestaurants.filter((res) =>
+                      res.info.name.toLowerCase().includes(text.toLowerCase())
+                    );
+                    setFilteredRestaurant(filtered);
+                  }}
+                />
+                <i className="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#fc8019] transition-colors"></i>
+                {searchText && (
+                  <button onClick={() => { setSearchText(""); setFilteredRestaurant(listOfRestaurants); }} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                )}
+              </div>
             </div>
-            <div
-              className={`border border-slate-300 px-3 py-2 mx-2  rounded-md whitespace-nowrap font-semibold text-xs md:text-sm text-slate-700 ${
-                activeButton === "rating" ? "bg-slate-300" : ""
-              }`}
-              onClick={handleRating}
-            >
-              Rating 4.3+
-            </div>
-            <div
-              className={`border border-slate-300 px-3 py-2  mx-2 rounded-md whitespace-nowrap text-xs md:text-sm text-slate-700 font-semibold ${
-                activeButton === "veg" ? "bg-slate-300" : ""
-              }`}
-              onClick={handleFastVeg}
-            >
-              Veg
-            </div>
-            <div
-              className={`border border-slate-300 px-2  mx-2 rounded-md whitespace-nowrap flex justify-center items-center text-xs md:text-sm text-slate-700 font-semibold ${
-                activeButton === "delivery" ? "bg-slate-300" : ""
-              }`}
-              onClick={handleFastDelivery}
-            >
-              Fast Delivery
-            </div>
+
           </div>
-        </div>
-      </div>
 
-      <div className="flex justify-center align-center ">
-        <div className="w-3/4 xl:w-4/5 tablet:w-11/12 mt-4 px-4">
-          <div className=" pb-4  flex  xl:gap-x-3 md:gap-x-4  md:flex-row md:flex-wrap  flex-col overflow-hidden justify-center items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
             {filteredRestaurant?.map((restaurant) => (
               <Link
                 key={restaurant.info.id}
                 to={"restaurant/" + restaurant.info.id}
+                className="transition-all duration-500 hover:scale-[0.96]"
               >
                 <RestaurantCardWithOffer resData={restaurant} />
               </Link>
             ))}
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
+
 
 export default Body;

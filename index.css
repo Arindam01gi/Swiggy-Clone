@@ -1,80 +1,62 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply font-['Inter'] text-gray-900 bg-white antialiased;
+  }
 
-/* 
-.header{
-    display: flex;
-    justify-content: space-between;
-    border: 1px solid black;
-}
-
-.logo{
-    margin: 5px;
-    width: 50px;
-}
-
-.nav-items > ul {
-    display: flex;
-    list-style-type: None;
-    
-}
-.nav-items > ul > li{
-    font-size: 18px;
-    padding: 5px;
-    margin: 5px;
-    padding: 0px 20px;
-}
-.search{
-    padding: 15px;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-['Lexend'] tracking-tight;
+  }
 }
 
-.res-card{
-    width: 200px;
-    background: #f0f0f0;
-    margin: 5px;
-    padding: 5px;
-}
-.res-card:hover{
-    border: 1px solid #f0f0f0;
-    cursor: pointer;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
-.res-logo{
-    width: 100%; 
+.animate-fade-in-left {
+  animation: fadeInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.res-containers{
-    display: flex;
-    flex-wrap: wrap;
-   
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.filter-btn{
-    margin: 15px;
-    cursor: pointer;
-}
-.shimmer-container{
-    display: flex;
-    flex-wrap: wrap;
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.shimmer-card{
-    width: 200px;
-    height: 400px;
-    background: #f0f0f0;
-    margin: 5px;
-    padding: 5px;
-
-}
-.login{
-    padding: 0 ,20px;
-    margin: 0 10px;
-    cursor: pointer;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
-.filter{
-    display: flex;
-} */
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fc8019;
+}

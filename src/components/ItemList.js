@@ -9,120 +9,96 @@ import {
 
 const ItemList = ({ items }) => {
   const dispatch = useDispatch();
-
   const cartItems = useSelector((store) => store.cart.items);
 
-  const handleClick = (item) => {
-    dispatch(addItems(item));
-  };
-
-  const handleIncrease = (item) => {
-    dispatch(incrementItem(item));
-  };
-
-  const handleRemoveItem = (item) => {
-    dispatch(removeItems(item));
-  };
-
-  console.log("cartItems", cartItems);
+  const handleIncrease = (item) => dispatch(incrementItem(item));
+  const handleDecrease = (item) => dispatch(removeItems(item));
+  const handleAddItem = (item) => dispatch(addItems(item));
 
   return (
-    <div>
-      {items.map((item) => (
-        <div
-          key={item.card.info.id}
-          className="md:p-2 md:m-2 py-2 text-left border-gray-200 border-b-2 "
-        >
-          <div className="flex justify-between">
-            <div className="w-3/4">
-              <div className="font-semibold text-base text-gray-700">
-                <span>{item?.card?.info?.name}</span>
-              </div>
-              <div>
-                <p className="font-semibold text-base text-gray-700">
-                  ₹
-                  {item?.card?.info?.defaultPrice
-                    ? item?.card?.info?.defaultPrice / 100
-                    : item?.card?.info?.price / 100}
-                </p>
-                <p className=" text-xs md:text-sm text-slate-500">
-                  {item?.card?.info?.description}
-                </p>
-              </div>
-            </div>
-            <div className="w-1/4 md:px-6  relative ">
-              {item?.card?.info?.imageId ? (
-                <div className="flex my-6">
-                  <img
-                    src={URL + item?.card?.info?.imageId}
-                    className="md:w-28 w-full rounded-md h-24"
-                  />
-                </div>
-              ) : (
-                ""
-              )}
+    <div className="bg-white">
+      {items.map((item) => {
+        const itemInCart = cartItems.find((cartItem) => cartItem?.card?.info?.id === item.card.info.id);
+        const { name, price, defaultPrice, description, imageId, itemAttribute, ratings } = item.card.info;
+        const avgRating = ratings?.aggregatedRating?.rating;
 
-              <div className="absolute bottom-1 md:left-0 left-1 md:right-2 right-3 md:p-2 text-center  ">
-                <button className="rounded-sm bg-white text-green-500 md:w-[96px] w-[80px] py-2 shadow-md">
-                  {cartItems && cartItems.length > 0 ? (
-                    cartItems.find(
-                      (cartItem) =>
-                        cartItem?.card?.info?.id === item.card.info.id
-                    ) ? (
-                      <div className="flex justify-between">
-                        <div
-                          className="w-1/3 "
-                          onClick={() => handleRemoveItem(item)}
-                        >
-                          <span className="text-black text-lg">&#8722;</span>
-                        </div>
-                        <div className="w-1/3 text-base font-medium">
-                          {
-                            cartItems.find(
-                              (cartItem) =>
-                                cartItem?.card?.info?.id === item.card.info.id
-                            ).quantity
-                          }
-                        </div>
-                        <div
-                          className="w-1/3 text-base font-medium"
-                          onClick={() => handleIncrease(item)}
-                        >
-                          <span className="">+</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="flex justify-center align-center"
-                        onClick={() => handleClick(item)}
-                      >
-                        <div className="w-1/3 text-base font-medium">
-                          {cartItems.find(
-                            (cartItem) =>
-                              cartItem?.card?.info?.id === item.card.info.id
-                          )?.quantity || "Add"}
-                        </div>
-                      </div>
-                    )
-                  ) : (
-                    <div
-                      className="flex justify-center align-center"
-                      onClick={() => handleClick(item)}
-                    >
-                      <div className="w-1/3 text-base font-medium">
-                        {cartItems.find(
-                          (cartItem) =>
-                            cartItem?.card?.info?.id === item.card.info.id
-                        )?.quantity || "Add"}
-                      </div>
-                    </div>
-                  )}
-                </button>
+        return (
+          <div
+            key={item.card.info.id}
+            className="flex justify-between items-start py-8 border-b border-gray-100 last:border-0 group animate-fade-in"
+          >
+            <div className="flex-1 pr-8">
+              <div className="flex items-center gap-2 mb-2">
+                {itemAttribute?.vegClassifier === "VEG" ? (
+                  <div className="w-[18px] h-[18px] border-2 border-green-600 flex items-center justify-center p-0.5 rounded-sm"><div className="w-2 h-2 bg-green-600 rounded-full"></div></div>
+                ) : (
+                  <div className="w-[18px] h-[18px] border-2 border-red-600 flex items-center justify-center p-0.5 rounded-sm"><div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-600"></div></div>
+                )}
+                {avgRating && (
+                  <span className="flex items-center gap-1 text-[#ee9c00] text-[12px] font-extrabold ml-1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#ee9c00">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                    {avgRating}
+                  </span>
+                )}
               </div>
+
+              <h3 className="text-[18px] font-extrabold text-[#3e4152] mb-1 font-['Lexend'] tracking-tight">{name}</h3>
+              <p className="text-[15px] font-extrabold text-[#3e4152] mb-3">₹{((price || defaultPrice) / 100).toFixed(2)}</p>
+
+              <p className="text-[14px] text-[#282c3f] opacity-45 font-medium leading-relaxed max-w-sm line-clamp-2">
+                {description}
+              </p>
+            </div>
+
+
+            <div className="relative">
+              <div className="w-32 h-32 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-all border border-gray-50">
+                {imageId ? (
+                  <img
+                    src={URL + imageId}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    alt={name}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-50 flex items-center justify-center">
+                    <i className="fa-solid fa-utensils text-gray-200 text-2xl"></i>
+                  </div>
+                )}
+              </div>
+
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-9">
+                {itemInCart ? (
+                  <div className="bg-white flex items-center justify-between border border-gray-200 rounded-lg shadow-xl px-2 h-full w-full overflow-hidden">
+                    <button
+                      onClick={() => handleDecrease(item)}
+                      className="text-[#60b246] font-black text-xl hover:scale-110 transition-transform w-8 h-full flex items-center justify-center"
+                    >
+                      −
+                    </button>
+                    <span className="text-[#60b246] font-black text-sm tabular-nums">{itemInCart.quantity}</span>
+                    <button
+                      onClick={() => handleIncrease(item)}
+                      className="text-[#60b246] font-black text-xl hover:scale-110 transition-transform w-8 h-full flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleAddItem(item)}
+                    className="bg-white text-[#60b246] font-black text-[14px] rounded-lg shadow-xl border border-gray-200 w-full h-full hover:bg-gray-50 transition-all uppercase tracking-tight flex items-center justify-center"
+                  >
+                    Add
+                  </button>
+                )}
+              </div>
+
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

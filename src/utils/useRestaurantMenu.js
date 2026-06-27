@@ -1,22 +1,26 @@
+import { useEffect, useState } from "react";
+import { GET_MENU_API } from "../utils/constants";
+import { useSelector } from "react-redux";
 
-import { useEffect ,useState } from "react";
-import { RESTAURANT_ITEM_API } from "../utils/constants";
+const useRestaurantMenu = (resId) => {
+    const [resInfo, setResInfo] = useState(null);
+    const location = useSelector((state) => state.location);
 
-const useRestaurantMenu = (resId) =>{
     useEffect(() => {
-        fetchData()
-    },[])
+        fetchData();
+    }, [location.lat, location.lng, resId]);
 
-   const [resInfo,setResInfo] = useState(null);
-
-
-    const fetchData = async () =>{
-        const data = await fetch(RESTAURANT_ITEM_API + resId)
-        const json = await data.json();
-        setResInfo(json.data);
-    }
+    const fetchData = async () => {
+        try {
+            const data = await fetch(GET_MENU_API(location.lat, location.lng, resId));
+            const json = await data.json();
+            setResInfo(json.data);
+        } catch (error) {
+            console.error("Error fetching menu:", error);
+        }
+    };
 
     return resInfo;
-}
+};
 
 export default useRestaurantMenu;

@@ -14,6 +14,11 @@ const RestaurantMenu = () => {
     return <Shimmer />;
   }
 
+  // Find the correct card for restaurant info
+  const infoCard = resInfo?.cards?.find(card => card?.card?.card?.info)?.card?.card?.info ||
+    resInfo?.cards[2]?.card?.card?.info ||
+    resInfo?.cards[0]?.card?.card?.info;
+
   const {
     name,
     cuisines,
@@ -23,193 +28,117 @@ const RestaurantMenu = () => {
     feeDetails,
     totalRatingsString,
     avgRating,
-  } 
-  // = resInfo?.cards[0]?.card?.card?.info;
-  = resInfo?.cards[2]?.card?.card?.info;
-
-  console.log("feeDetails",feeDetails)
+  } = infoCard || {};
 
   const offerDetails =
+    resInfo?.cards?.find(card => card?.card?.card?.gridElements?.infoWithStyle?.offers)?.card?.card?.gridElements?.infoWithStyle?.offers ||
     resInfo?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.offers;
 
-  // console.log("abc", offerDetails);
+  const regularCards = resInfo?.cards?.find(card => card?.groupedCard)?.groupedCard?.cardGroupMap?.REGULAR?.cards ||
+    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards;
 
-  const { itemCards } =
-    // resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
-    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
+  const categories = regularCards?.filter(
+    (c) =>
+      c.card?.card?.["@type"] ===
+      "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
+  );
 
-  const carousel  =
-    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card
-      ?.carousel;
+  const carousel = regularCards?.find(c => c.card?.card?.carousel)?.card?.card?.carousel;
 
-  const categories =
-    resInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
-      (c) =>
-        c.card?.card?.["@type"] ===
-        "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
-      // || c.card?.card?.["@type"] ===
-      // "type.googleapis.com/swiggy.presentation.food.v2.NestedItemCategory"
-    );
+  if (!infoCard) return <Shimmer />;
 
   return (
-    <div className="text-center top-20 relative">
-      <div className="flex justify-center align-center ">
-        <div className=" flex justify-between  px-2 border-gray-200 border-b-2 lg:w-1/2 xs:w-11/12">
-          <div className="w-3/4 text-left my-6">
-            <h1 className="font-bold  text-xl">{name}</h1>
-            <p className="text-slate-500 text-sm mt-2">{cuisines.join(" ,")}</p>
-            <p className="text-slate-500 text-sm">
-              {areaName}
-              <span>
-                &nbsp;,&nbsp;
-                {sla?.lastMileTravelString}
-              </span>
+    <div className="pt-24 pb-20 bg-white min-h-screen">
+      <div className="container mx-auto max-w-[800px] px-4">
+        {/* Restaurant Header */}
+        <div className="flex justify-between items-start pb-8 border-b border-dashed border-gray-300">
+          <div className="flex-1 pr-4">
+            <h1 className="font-extrabold text-[24px] text-[#282c3f] tracking-tight mb-2 font-['Lexend']">{name}</h1>
+            <p className="text-[14px] text-[#686b78] font-medium mb-1">{cuisines?.join(", ")}</p>
+            <p className="text-[14px] text-[#686b78] font-medium">
+              {areaName}, {sla?.lastMileTravelString}
             </p>
-            <p className="text-slate-500 text-sm mt-2">
-              <span className="mr-2">
-                <i className="fa-regular fa-person-biking font-bold"></i>
-              </span>
-              {feeDetails.message}
-            </p>
+
+            <div className="flex items-center gap-2 mt-4 text-[#686b78] text-[13px] font-medium">
+              <i className="fa-regular fa-person-biking text-lg"></i>
+              <span>{feeDetails?.message}</span>
+            </div>
           </div>
 
-          <div className="w-1/4 pt-10">
-            <button className=" min-w-[80px] border border-gray-200 text-center rounded-lg">
-              <div className="my-2">
-                <span className="text-green-600 ">
-                  <span className="">
-                    <i className="fa-solid fa-star"></i>
-                  </span>
-                  <span className="font-bold">{avgRating}</span>
-                </span>
+          <div className="flex-shrink-0 flex flex-col items-center justify-center p-3 border border-gray-200 rounded-2xl shadow-sm bg-white min-w-[80px]">
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-md ${avgRating >= 4 ? 'bg-[#00ad1d]' : 'bg-[#db7c38]'} shadow-sm mb-2`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="inline-block relative -top-[1px]">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+              <span className="font-extrabold text-[14px] text-white leading-none">{avgRating}</span>
+            </div>
+
+
+            <div className="pt-1 border-t border-gray-100 w-full text-center">
+              <span className="text-[10px] font-black text-[#8b8d97] tracking-tight uppercase">{totalRatingsString}</span>
+            </div>
+          </div>
+
+        </div>
+
+
+        {/* Time and cost details */}
+        <div className="flex items-center gap-8 py-6 text-[#282c3f]">
+          <div className="flex items-center gap-3">
+            <i className="fa-regular fa-clock text-xl"></i>
+            <span className="font-extrabold text-[15px] uppercase tracking-wide">{sla.slaString}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <i className="fa-solid fa-indian-rupee-sign text-lg border-2 border-[#282c3f] rounded-full w-6 h-6 flex items-center justify-center text-[10px]"></i>
+            <span className="font-extrabold text-[15px] uppercase tracking-wide">{costForTwoMessage}</span>
+          </div>
+        </div>
+
+        {/* Offers Carousel Section */}
+        {offerDetails && offerDetails.length > 0 && (
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-6 mb-8 border-b border-gray-100 scroll-smooth items-stretch flex-nowrap">
+            {offerDetails.map((offer, index) => (
+              <div
+                key={`${index}-offer`}
+                className="flex-shrink-0 min-w-[240px] p-4 border border-gray-200 rounded-2xl flex flex-col justify-center gap-2 hover:bg-gray-50 transition-all cursor-pointer group shadow-sm bg-white border-l-4 border-l-[#fc8019]"
+              >
+                <div className="flex items-center gap-2">
+                  <img
+                    src={`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_28,h_28/${offer?.info?.offerLogo || 'Store_Assets/Icons/OfferIconCart'}`}
+                    className="w-5 h-5 object-contain"
+                    alt=""
+                  />
+                  <span className="font-extrabold text-[15px] text-[#282c3f] group-hover:text-[#fc8019] transition-colors tracking-tight">{offer?.info?.header}</span>
+                </div>
+                <span className="text-[11px] font-bold text-[#93959f]">{offer?.info?.couponCode} | {offer?.info?.description}</span>
               </div>
-              <hr className="w-3/4 ml-3 " />
-              <div className="my-3 font-sans text-xs font-bold text-slate-400">
-                {totalRatingsString}
-              </div>
-            </button>
+            ))}
           </div>
-        </div>
-      </div>
-      <div className="flex justify-center items-center ">
-        <div className="flex mt-3 w-11/12 md:w-1/2 gap-10 md:gap-4 justify-center  lg:justify-start">
-          <div className="text-slate-700 flex items-center gap-2 ">
-            <svg
-              className="RestaurantTimeCost_icon__8UdT4"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-            >
-              <circle
-                r="8.35"
-                transform="matrix(-1 0 0 1 9 9)"
-                stroke="#3E4152"
-                strokeWidth="1.3"
-              ></circle>
-              <path
-                d="M3 15.2569C4.58666 16.9484 6.81075 18 9.273 18C14.0928 18 18 13.9706 18 9C18 4.02944 14.0928 0 9.273 0C9.273 2.25 9.273 9 9.273 9C6.36399 12 5.63674 12.75 3 15.2569Z"
-                fill="#3E4152"
-              ></path>
-            </svg>
-            <span className="font-bold">{sla.slaString}</span>
-          </div>
-          <div className="text-slate-700 flex items-center gap-2">
-            <svg
-              className="RestaurantTimeCost_icon__8UdT4"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-            >
-              <circle
-                cx="9"
-                cy="9"
-                r="8.25"
-                stroke="#3E4152"
-                strokeWidth="1.5"
-              ></circle>
-              <path
-                d="M12.8748 4.495H5.6748V6.04H7.9698C8.7948 6.04 9.4248 6.43 9.6198 7.12H5.6748V8.125H9.6048C9.3798 8.8 8.7648 9.22 7.9698 9.22H5.6748V10.765H7.3098L9.5298 14.5H11.5548L9.1098 10.57C10.2048 10.39 11.2698 9.58 11.4498 8.125H12.8748V7.12H11.4348C11.3148 6.475 10.9698 5.905 10.4298 5.5H12.8748V4.495Z"
-                fill="#3E4152"
-              ></path>
-            </svg>
-            <span className="font-bold">{costForTwoMessage}</span>
-          </div>
-        </div>
-      </div>
+        )}
 
-      <div className="flex justify-center items-center ">
-        <div className="flex flex-wrap mt-3 w-11/12 md:w-1/2 gap-3 cursor-pointer border-gray-200 border-b-2 pb-8 sm:justify-center lg:justify-start">
-          {offerDetails && offerDetails.length > 0 ? (
-            <>
-              {offerDetails.slice(0, 3).map((offer, index) => {
-                // console.log("offerDetails", offerDetails);
-                return (
-                  <div
-                    className="min-w-[200px] h-[64px] flex border border-slate-300 rounded-lg hover:min-w-[210px] hover:h-[68px]"
-                    key={`${index}-offer`}
-                  >
-                    {offer?.info?.offerTag === "FLAT DEAL" ? (
-                      <div className="vertical-writing text-center mx-1 mt-1 font-bold">
-                        FLAT DEAL
-                      </div>
-                    ) : (
-                      ""
-                    )}
 
-                    <div className="p-1 flex flex-col justify-center">
-                      <p className="flex text-sm gap-2 text-slate-600 font-bold">
-                        {offer?.info?.offerLogo ? (
-                          <img
-                            src={`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_28,h_28/${offer?.info?.offerLogo}`}
-                            className="w-[20px] h-[20px]"
-                            alt=""
-                          />
-                        ) : (
-                          <img
-                            src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_28,h_28/Store_Assets/Icons/OfferIconCart"
-                            className="w-[20px] h-[20px]"
-                            alt=""
-                          />
-                        )}
-
-                        {offer.info.header}
-                      </p>
-                      <p className="small-text pt-2 text-slate-400 font-bold ">
-                        {offer.info.couponCode} {offer.info.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-      {carousel?<div className="flex justify-center align-center">
-          <div className="flex w-1/2 border-gray-200 border-b-2 my-4 pb-4">
+        {carousel && (
+          <div className="mb-10 pb-10 border-b border-gray-100">
             <ImageCarousel props={carousel} />
           </div>
-        </div>:""}
-    
-        
-      
-      {/* Categories Accordian  */}
-      {categories.map((category, index) => (
-        <RestaurantCategory
-          data={category?.card?.card}
-          key={category?.card?.card?.title}
-          showItems={index === showIndex ? true : false}
-          setShowIndex={() => setShowIndex(index)}
-        />
-      ))}
+        )}
+
+        {/* Categories Accordian  */}
+        <div className="space-y-4">
+          {categories.map((category, index) => (
+            <RestaurantCategory
+              data={category?.card?.card}
+              key={category?.card?.card?.title}
+              showItems={index === showIndex ? true : false}
+              setShowIndex={() => setShowIndex(index === showIndex ? null : index)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
+
   );
 };
+
 
 export default RestaurantMenu;

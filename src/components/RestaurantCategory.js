@@ -8,24 +8,24 @@ const RestaurantCategory = ({ data, showItems, setShowIndex }) => {
   };
 
   return (
-    <div>
-      <div className="md:w-1/2 w-11/12 mx-auto my-4 bg-gray-50 shadow-lg p-4 ">
-        <div className="flex justify-between" onClick={handleSubmit}>
-          <span className="font-bold text-base text-slate-700">
-            {data.title} ({  data.itemCards.length})
+    <div className="w-full">
+      <div className="bg-white border-b-[16px] border-[#f1f1f6] last:border-b-0">
+        <div className="p-5 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors select-none" onClick={handleSubmit}>
+          <span className="font-extrabold text-[18px] text-[#3e4152] font-['Lexend'] tracking-tight">
+            {data.title} ({data.itemCards?.length || 0})
           </span>
-          <span className="cursor-pointer">
-            {showItems ? (
-              <i className="fa-thin fa-angle-up font-bold"></i>
-            ) : (
-              <i className="fa-thin fa-angle-down font-bold"></i>
-            )}
+          <span className={`text-[#3e4152] text-xl transition-transform duration-300 ${showItems ? 'rotate-180' : ''}`}>
+            <i className="fa-solid fa-chevron-down"></i>
           </span>
         </div>
 
-        {showItems && <ItemList items={data.itemCards} />}
+        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showItems ? 'max-h-[5000px] opacity-100 px-5 pb-5' : 'max-h-0 opacity-0'}`}>
+          <ItemList items={data.itemCards || []} />
+        </div>
       </div>
     </div>
+
+
   );
 };
 export default RestaurantCategory;
